@@ -11,6 +11,15 @@ module.exports = (function() {
         this.routes = {};
     }
 
+    Server.prototype.redirect = function(res, uri, permanent) {
+        if (typeof permanent === "undefined") {
+            permanent = false;
+        }
+        var code = permanent ? 301 : 302;
+        res.writeHead(code, { "Location": uri });
+        res.end();
+    };
+
     Server.prototype.route = function(method, _path, fn, opts) {
         /* better alternatives to typeof check? */
         var path_regex, path;
@@ -67,7 +76,8 @@ module.exports = (function() {
         var result = handler({
                 params: params,
                 captures: captures,
-                headers: headers
+                headers: headers,
+                _res: res
         });
 
         /* Oops, something went wrong... */
