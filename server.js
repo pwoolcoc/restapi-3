@@ -11,14 +11,24 @@ module.exports = (function() {
         this.routes = {};
     }
 
-    Server.prototype.redirect = function(res, uri, permanent) {
+    Server.prototype.redirect = function(uri, permanent) {
         if (typeof permanent === "undefined") {
             permanent = false;
         }
-        var code = permanent ? 301 : 302;
-        res.writeHead(code, { "Location": uri });
-        res.end();
+        return {
+            status: permanent ? 301 : 302,
+            message: "",
+            headers: { "Location": uri }
+        }
     };
+
+    Server.prototype.error = function(status, message) {
+        return {
+            status: status,
+            message: message + "\n",
+            headers: { "Content-Type": "text/plain" }
+        };
+    }
 
     Server.prototype.route = function(method, _path, fn, opts) {
         /* better alternatives to typeof check? */
@@ -65,7 +75,7 @@ module.exports = (function() {
 
         /* If we can't perform the requested verb on that path, return 405 */
         if (typeof routes[method] === "undefined") {
-            return error(res, 405, "405 Method Not Allowed");
+            return self.process_return(res, self.error(405, "405 Method Not Allowed"));
         }
 
         var handler = routes[method],
@@ -160,11 +170,6 @@ module.exports = (function() {
         return obj1;
     }
 
-    function error(res, status, message) {
-        res.writeHead(status, { "Content-Type": "text/plain" });
-        res.write(message + "\n");
-        res.end();
-    }
 
     return Server;
 })();
