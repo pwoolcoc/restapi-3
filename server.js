@@ -60,14 +60,15 @@ module.exports = (function() {
 
     /* the router could be much, much smarter... */
     Server.prototype.router = function(req, res) {
-        var uri = url.parse(req.url, true),  /* `true` makes it also parse the querystring into an object */
+        var self = this,
+            uri = url.parse(req.url, true),  /* `true` makes it also parse the querystring into an object */
             method = req.method.toUpperCase(),
             headers = req.headers;
 
         /* First, try to find a match for the route */
-        var handler_pair = firstmatch(uri.pathname, this.routes);
+        var handler_pair = firstmatch(uri.pathname, self.routes);
         if (typeof handler_pair === "undefined") {
-            return error(res, 404, "404 Not Found");
+            return self.process_return(res, self.error(404, "404 Not Found"));
         }
 
         var routes = handler_pair[0],
@@ -80,21 +81,38 @@ module.exports = (function() {
 
         var handler = routes[method],
             captures = match.slice(1),
-            params = uri.querystring;
+            params = uri.querystring || {},
+            body = "";
 
-        /* Now we have a handler, run it */
-        var result = handler({
-                params: params,
-                captures: captures,
-                headers: headers,
-                _res: res
+        req.on('data', function(chunk) {
+            body += chunk.toString();
         });
 
-        /* Oops, something went wrong... */
-        if (typeof result === "undefined") {
-            return error(res, 500, "500 Server Error");
-        }
+        req.on('end', function() {
+            if (headers["Content-Type"] === "application/json") {
+                body = JSON.parse(body);
+            }
 
+            /* Now we have a handler, run it */
+            var result = handler({
+                    params: params,
+                    captures: captures,
+                    headers: headers,
+                    data: body,
+                    _res: res
+            });
+
+            /* Oops, something went wrong... */
+            if (typeof result === "undefined") {
+                result = self.error(500, "500 Server Error");
+            }
+
+            return self.process_return(res, result);
+
+        });
+    };
+
+    Server.prototype.process_return = function(res, obj) {
         var status = 404,
             headers = {
                 "Content-Type": "text/html",
@@ -102,20 +120,20 @@ module.exports = (function() {
             content,
             content_length;
 
-        if (typeof result === "string") {
-            content = result;
-            content_length = result.length;
+        if (typeof obj === "string") {
+            content = obj;
+            content_length = obj.length;
             status = 200;
-        } else if (Array.isArray(result)) {
-            status = result[0];
-            content = result[1];
+        } else if (Array.isArray(obj)) {
+            status = obj[0];
+            content = obj[1];
             content_length = content.length;
-            headers = merge(headers, result[2]);
+            headers = merge(headers, obj[2]);
         } else { /* assume object */
-            status = result.status;
-            content = result.content;
+            status = obj.status;
+            content = obj.content;
             content_length = content.length;
-            headers = merge(headers, result.headers);
+            headers = merge(headers, obj.headers);
         }
 
         if (typeof headers["Content-Length"] === "undefined") {
