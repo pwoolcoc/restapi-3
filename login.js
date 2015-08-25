@@ -40,7 +40,10 @@ module.exports = {
  * not worried about sending credentials directly in the post body,
  * or base64'd in the Authorization header)
  */
-login: function(app, db, sessions) {
+login: function(app) {
+    var db = app.users,
+        sessions = app.sessions;
+
     return function(args) {
         var data = args.data,
             headers = args.headers;
@@ -92,7 +95,10 @@ login: function(app, db, sessions) {
  *     Authorization: <some base64 string>
  *
  */
-logout: function(app, db, sessions) {
+logout: function(app) {
+    var db = app.users,
+        sessions = app.sessions;
+
     return function(args) {
         var captures = args.captures,
             headers = args.headers;
