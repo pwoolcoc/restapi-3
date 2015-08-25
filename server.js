@@ -53,6 +53,16 @@ module.exports = (function() {
         return this.route.apply(this, ["GET"].concat(args));
     };
 
+    Server.prototype.put = function() {
+        var args = [].slice.call(arguments, 0);
+        return this.route.apply(this, ["PUT"].concat(args));
+    };
+
+    Server.prototype.delete = function() {
+        var args = [].slice.call(arguments, 0);
+        return this.route.apply(this, ["DELETE"].concat(args));
+    };
+
     Server.prototype.post = function() {
         var args = [].slice.call(arguments, 0);
         return this.route.apply(this, ["POST"].concat(args));
