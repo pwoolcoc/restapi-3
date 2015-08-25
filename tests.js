@@ -98,10 +98,10 @@ var tests = {
         var options = {
             hostname: HOST,
             port: PORT,
-            path: PATH,
+            path: PATH ,
             method: "POST",
             headers: {
-                "Authorization": "UGF1bDpwYXNzdzByZA=="
+                "Authorization": new Buffer("Paul:passw0rd").toString('base64')
             }
         };
 
@@ -115,20 +115,16 @@ var tests = {
             res.on('end', function() {
                 var content = JSON.parse(res_body),
                     token = content.token,
-                    body = JSON.stringify({
-                        username: "Paul"
-                    }),
-                    len = body.length;
+                    path = PATH + "/Paul";  /* /session/Paul */
 
                 var del_options = {
                     hostname: HOST,
                     port: PORT,
-                    path: PATH,
+                    path: path,
                     method: "DELETE",
                     headers: {
                         "Authorization": token,
                         "Content-Type": "application/json",
-                        "Content-Length": len
                     }
                 };
 
@@ -142,7 +138,6 @@ var tests = {
                     pass();
                 });
 
-                del_req.write(body);
                 del_req.end();
 
             });

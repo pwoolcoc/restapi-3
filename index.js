@@ -84,26 +84,20 @@ app.post("/session", function(args) {
  * Logout
  *
  * In order to log out of your session, you must first put your
- * login token in the `Authorization` header. The username associated
- * with that token must be the same user your are trying to logout.
+ * login token in the `Authorization` header.
  *
  * Here is what a typical request to this endpoint would look like:
  *
- *     DELETE /session
+ *     DELETE /session/username
  *     Authorization: <some base64 string>
- *     Content-Type: application/json
- *
- *     {
- *       "username": "myusername"
- *     }
  *
  */
-app.delete("/session", function(args) {
-    var data = args.data,
+app.delete(new RegExp(/^\/session\/(\w+)$/), function(args) {
+    var captures = args.captures,
         headers = args.headers;
 
     var authorization = headers["authorization"],
-        username = data.username;
+        username = captures[0];
 
     if (typeof authorization === 'undefined') {
         return app.error(401, "Unauthorized");
