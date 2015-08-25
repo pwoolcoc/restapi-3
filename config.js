@@ -7,7 +7,10 @@ module.exports = {
             var all_configs = configs.read("*", function(err, result) {
                 response = {
                     status: 200,
-                    content: JSON.stringify(result)
+                    content: JSON.stringify(result),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 };
             });
             return response;
