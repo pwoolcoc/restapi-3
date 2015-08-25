@@ -34,15 +34,20 @@ DB.prototype.read = function(crit, fn) {
 
     var results = [];
 
-    self.rows.forEach(function(row, idx) {
-        var match = [];
-        Object.keys(crit).forEach(function(key) {
-            match.push(row[key] === crit[key]);
+    /* Special "get all" handling */
+    if (typeof crit === "string" && crit === "*") {
+        results = self.rows;
+    } else {
+        self.rows.forEach(function(row, idx) {
+            var match = [];
+            Object.keys(crit).forEach(function(key) {
+                match.push(row[key] === crit[key]);
+            });
+            if (match.reduce(function(accum, el) { return accum && el; }, true)) {
+                results.push(row);
+            }
         });
-        if (match.reduce(function(accum, el) { return accum && el; }, true)) {
-            results.push(row);
-        }
-    });
+    }
 
     /* not actually catching any errors at this point */
     return fn(null, results);
