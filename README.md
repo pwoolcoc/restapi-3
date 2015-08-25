@@ -17,3 +17,11 @@ $ npm test
 
 If you do not have `npm`, just run `node index.js` to run the server,
 and `node tests.js` to run the tests.
+
+# Usage
+
+There are docs in the `docs/` folder with some examples on how to use
+the endpoints.
+
+There is no way to register new users, so if you want to add users,
+please add them to the JSON-formatted file, `users.dat`.
