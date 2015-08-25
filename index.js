@@ -15,11 +15,15 @@ var Server = require("./server"),
     sessions = {}; 
 
 /*
+ * Login
+ *
  * Two different ways to create a token using this endpoint:
  *
  *   1. In POST body:
  *
  *      POST /login
+ *      Content-Type: application/json
+ *
  *      {
  *          "username": "myusername",
  *          "password": "passw0rd"
@@ -74,6 +78,52 @@ app.post("/session", function(args) {
     });
 
     return response;
+});
+
+/*
+ * Logout
+ *
+ * In order to log out of your session, you must first put your
+ * login token in the `Authorization` header. The username associated
+ * with that token must be the same user your are trying to logout.
+ *
+ * Here is what a typical request to this endpoint would look like:
+ *
+ *     DELETE /session
+ *     Authorization: <some base64 string>
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "username": "myusername"
+ *     }
+ *
+ */
+app.delete("/session", function(args) {
+    var data = args.data,
+        headers = args.headers;
+
+    var authorization = headers["authorization"],
+        username = data.username;
+
+    if (typeof authorization === 'undefined') {
+        return app.error(401, "Unauthorized");
+    }
+
+    if (typeof username === 'undefined') {
+        return app.error(400, "Bad Request");
+    }
+
+    var token = sessions[username];
+
+    if (token !== authorization) {
+        return app.error(401, "Unauthorized");
+    }
+
+    if (delete sessions[username]) {
+        return { status: 200, message: "Session successfully deleted" };
+    } else {
+        return app.error(500, "Server Error");
+    }
 });
 
 app.serve();
