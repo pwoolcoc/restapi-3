@@ -17,3 +17,25 @@ app.post("/session", login.login(app));
 app.delete(new RegExp(/^\/session\/(\w+)$/), login.logout(app));
 
 app.serve();
+
+function is_authed(handler) {
+    return function(args) {
+        var headers = args.headers;
+
+        if (typeof headers === 'undefined') {
+            return app.error(401, "Unauthorized");
+        }
+
+        var authorization = headers["authorization"];
+        if (typeof authorization === 'undefined') {
+            return app.error(401, "Unauthorized");
+        }
+
+        var session = app.sessions[authorization];
+        if (typeof session === "undefined") {
+            return app.error(401, "Unauthorized");
+        }
+
+        return handler(args);
+    };
+}
