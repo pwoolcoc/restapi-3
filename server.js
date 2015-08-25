@@ -76,6 +76,8 @@ module.exports = (function() {
             method = req.method.toUpperCase(),
             headers = req.headers;
 
+        self.debug(method, uri.pathname);
+
         headers = fixup_headers(headers);
 
         /* First, try to find a match for the route */
