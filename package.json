@@ -1,7 +1,7 @@
 {
-  "name": "nessus-q1",
+  "name": "nessus-q2",
   "version": "1.0.0",
-  "description": "Answer to the first coding challenge",
+  "description": "Answer to the second coding challenge",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
