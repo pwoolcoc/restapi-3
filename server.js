@@ -30,7 +30,7 @@ module.exports = (function() {
         };
     }
 
-    Server.prototype.route = function(method, _path, fn, opts) {
+    Server.prototype.add_route = function(method, _path, fn, opts) {
         /* better alternatives to typeof check? */
         var path_regex, path;
         if (typeof _path === "string") {
@@ -51,22 +51,22 @@ module.exports = (function() {
 
     Server.prototype.get = function() {
         var args = [].slice.call(arguments, 0);
-        return this.route.apply(this, ["GET"].concat(args));
+        return this.add_route.apply(this, ["GET"].concat(args));
     };
 
     Server.prototype.put = function() {
         var args = [].slice.call(arguments, 0);
-        return this.route.apply(this, ["PUT"].concat(args));
+        return this.add_route.apply(this, ["PUT"].concat(args));
     };
 
     Server.prototype.delete = function() {
         var args = [].slice.call(arguments, 0);
-        return this.route.apply(this, ["DELETE"].concat(args));
+        return this.add_route.apply(this, ["DELETE"].concat(args));
     };
 
     Server.prototype.post = function() {
         var args = [].slice.call(arguments, 0);
-        return this.route.apply(this, ["POST"].concat(args));
+        return this.add_route.apply(this, ["POST"].concat(args));
     };
 
     /* the router could be much, much smarter... */
