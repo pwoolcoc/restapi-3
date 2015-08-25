@@ -42,10 +42,11 @@ module.exports = (function() {
         }
         method = method.toUpperCase();
         if (typeof this.routes[path] === "undefined") {
-            this.routes[path] = {};
+            this.routes[path] = {"OPTIONS": function() {}};
         }
         this.routes[path][method] = fn;
         this.routes[path].regex = path_regex;
+        this.routes[path]["OPTIONS"] = create_options_endpoint(Object.keys(this.routes[path])||[]);
     };
 
     Server.prototype.get = function() {
@@ -210,6 +211,17 @@ module.exports = (function() {
             newHeaders[key.toLowerCase()] = headers[key];
         });
         return newHeaders;
+    }
+
+    function create_options_endpoint(method_list) {
+        var methods = method_list.filter(function(el) { return el !== "regex"; }).sort().join(",");
+        return function() {
+            return {
+                status: 200,
+                content: "",
+                headers: {"Allow": methods}
+            };
+        };
     }
 
     return Server;
