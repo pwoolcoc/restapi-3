@@ -1,6 +1,7 @@
 var Server = require("./server"),
     DB = require("./db"),
     login = require("./login"),
+    config = require("./config"),
     crypto = require("crypto"),
     sessions = {},
     app = new Server({ debug: true }),
@@ -11,10 +12,19 @@ var Server = require("./server"),
 app.sessions = sessions;
 app.users = user_db;
 app.configs = config_db;
+var config_obj_route = /^\/configuration\/(\w+)$/;
+
 
 /* Login-related endpoints */
 app.post("/session", login.login(app));
 app.delete(new RegExp(/^\/session\/(\w+)$/), login.logout(app));
+
+/* Config-related endpoints */
+app.get('/configuration', is_authed(config.all(app)));
+app.post('/configuration', is_authed(config.create(app)));
+app.get(new RegExp(config_obj_route), is_authed(config.get(app)));
+app.put(new RegExp(config_obj_route), is_authed(config.update(app)));
+app.delete(new RegExp(config_obj_route), is_authed(config.delete(app)));
 
 app.serve();
 
