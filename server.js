@@ -102,7 +102,7 @@ module.exports = (function() {
         });
 
         req.on('end', function() {
-            if (headers["content-type"] === "application/json") {
+            if (body && headers["content-type"] === "application/json") {
                 body = JSON.parse(body);
             }
 
