@@ -75,6 +75,8 @@ module.exports = (function() {
             method = req.method.toUpperCase(),
             headers = req.headers;
 
+        headers = fixup_headers(headers);
+
         /* First, try to find a match for the route */
         var handler_pair = firstmatch(uri.pathname, self.routes);
         if (typeof handler_pair === "undefined") {
@@ -99,7 +101,7 @@ module.exports = (function() {
         });
 
         req.on('end', function() {
-            if (headers["Content-Type"] === "application/json") {
+            if (headers["content-type"] === "application/json") {
                 body = JSON.parse(body);
             }
 
@@ -141,7 +143,7 @@ module.exports = (function() {
             headers = merge(headers, obj[2]);
         } else { /* assume object */
             status = obj.status;
-            content = obj.content;
+            content = obj.content || "";
             content_length = content.length;
             headers = merge(headers, obj.headers);
         }
@@ -198,6 +200,17 @@ module.exports = (function() {
         return obj1;
     }
 
+    /* For now, this just lowercases all the header names,
+     * to make it easier to be sure we can get the right
+     * values out of it
+     */
+    function fixup_headers(headers) {
+        var newHeaders = {};
+        Object.keys(headers).forEach(function(key) {
+            newHeaders[key.toLowerCase()] = headers[key];
+        });
+        return newHeaders;
+    }
 
     return Server;
 })();
