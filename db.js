@@ -1,13 +1,13 @@
 var fs = require('fs'),
     events = require('events');
 
-function DB() {
+function DB(fname) {
     var self = this;
     self.rows = [];
     self.loaded = false;
     self.events = new events.EventEmitter;
 
-    fs.readFile("users.dat", function(err, data) {
+    fs.readFile(fname, function(err, data) {
         if (err) throw err;
         self.rows = JSON.parse(data);
         self.loaded = true;
@@ -70,4 +70,4 @@ DB.prototype.update = function(crit, row) {
 DB.prototype.delete = function(crit) {
 };
 
-module.exports = new DB();
+module.exports = new DB("users.dat");
