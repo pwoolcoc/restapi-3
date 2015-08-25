@@ -9,12 +9,14 @@
  */
 
 var Server = require("./server"),
-    db = require("./db"),
+    DB = require("./db"),
     login = require("./login"),
     app = new Server({ debug: true }),
     crypto = require("crypto"),
-    sessions = {}; 
+    sessions = {},
+    user_db = new DB("users.dat");
 
-app.post("/session", login.login(app, db, sessions));
-app.delete(new RegExp(/^\/session\/(\w+)$/), login.logout(app, db, sessions));
+
+app.post("/session", login.login(app, user_db, sessions));
+app.delete(new RegExp(/^\/session\/(\w+)$/), login.logout(app, user_db, sessions));
 app.serve();

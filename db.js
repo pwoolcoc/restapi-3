@@ -70,4 +70,4 @@ DB.prototype.update = function(crit, row) {
 DB.prototype.delete = function(crit) {
 };
 
-module.exports = new DB("users.dat");
+module.exports = DB;
