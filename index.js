@@ -5,8 +5,8 @@ var Server = require("./server"),
     crypto = require("crypto"),
     sessions = {},
     app = new Server({ debug: true }),
-    user_db = new DB("users.dat"),
-    config_db = new DB("configurations.dat");
+    user_db = new DB("data/users.dat"),
+    config_db = new DB("data/configurations.dat");
 
 
 app.sessions = sessions;
