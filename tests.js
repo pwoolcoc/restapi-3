@@ -162,6 +162,44 @@ var tests = {
 
             req.end();
         });
+    },
+    get_config: function(pass, fail) {
+        as_authenticated(function(content) {
+            var options = {
+                hostname: HOST,
+                port: PORT,
+                path: CONFIGS_PATH + "/host1",
+                method: "GET",
+                headers: {
+                    "Authorization": content.token,
+                    "Content-Type": "application/json"
+                }
+            };
+            var req = http.request(options, function(res) {
+                var body = "";
+                res.setEncoding("utf8");
+                res.on("data", function(chunk) {
+                    body += chunk;
+                });
+                res.on('end', function() {
+                    var results = JSON.parse(body),
+                        should_be = {
+                            "name" : "host1",
+                            "hostname" : "nessus-ntp.lab.com",
+                            "port" : 1241,
+                            "username" : "toto"
+                        };
+                    try {
+                        assert.equal(res.statusCode, 200);
+                        assert.deepEqual(results, should_be);
+                        pass();
+                    } catch(e) {
+                        fail(e);
+                    }
+                });
+            });
+            req.end();
+        });
     }
 };
 
