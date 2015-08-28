@@ -24,12 +24,21 @@ function DB(fname) {
  * fn is a callback function that takes arguments
  * (err, results).
  */
-DB.prototype.read = function(crit, fn) {
+DB.prototype.read = function(crit, opts_or_fn, _fn) {
     var self = this;
     if (!self.loaded) {
         self.events.once('loaded', function() {
-            self.read(crit, fn);
+            self.read(crit, opts_or_fn, _fn);
         });
+    }
+
+    var opts, fn;
+    if (typeof opts_or_fn === "function") {
+        opts = {};
+        fn = opts_or_fn;
+    } else {
+        opts = opts_or_fn;
+        fn = _fn;
     }
 
     var results = [];
@@ -42,6 +51,33 @@ DB.prototype.read = function(crit, fn) {
             if (self.matches(crit, row)) {
                 results.push(row);
             }
+        });
+    }
+
+    if (typeof opts.sort !== "undefined") {
+        var sort = opts.sort,
+            dir = (typeof opts.dir !== "undefined" ? opts.dir : "asc"),
+            mult;
+
+        results = results.filter(function(el) { return el.hasOwnProperty(sort); });
+
+        if (dir === "asc") {
+            mult = 1;
+        } else if (dir === "desc") {
+            mult = -1;
+        } else {
+            throw "Unknown sort direction";
+        }
+
+        results = results.sort(function(_a, _b) {
+            var a = _a[sort],
+                b = _b[sort];
+            if (a < b) {
+                return -1 * mult;
+            } else if (a > b) {
+                return 1 * mult;
+            }
+            return 0;
         });
     }
 

@@ -3,8 +3,11 @@ module.exports = {
     all: function(app) {
         var configs = app.configs
         return function(args) {
-            var repsonse;
-            var all_configs = configs.read("*", function(err, result) {
+            var repsonse,
+                params = args.params,
+                sort = params["sort"] || "name",
+                dir = params["dir"] || "asc";
+            var all_configs = configs.read("*", { "sort": sort, "dir": dir }, function(err, result) {
                 response = app.json_response({ "configurations": result });
             });
             return response;

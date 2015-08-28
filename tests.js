@@ -144,7 +144,6 @@ var tests = {
                     body += chunk;
                 });
                 res.on('end', function() {
-                    console.log(body);
                     try {
                         var result = JSON.parse(body),
                             status = res.statusCode;
@@ -154,6 +153,48 @@ var tests = {
                         assert.notEqual(typeof result.configurations, "undefined", "make sure there is a `configurations` key");
                         assert.ok(Array.isArray(result.configurations), "make sure there is an array under the `configurations` key");
                         assert.equal(result.configurations.length, 2, "make sure there are 2 elements in the array");
+                        pass();
+                    } catch(e) {
+                        fail(e);
+                    }
+                });
+            });
+
+            req.end();
+        });
+    },
+    all_configs_sorted: function(pass, fail) {
+        as_authenticated(function(content) {
+            var token = content.token,
+                options = {
+                    hostname: HOST,
+                    port: PORT,
+                    path: CONFIGS_PATH + "?sort=port&dir=desc",
+                    method: "GET",
+                    headers: {
+                        "Authorization": token,
+                        "Content-Type": "application/json"
+                    }
+                },
+                body = "";
+
+            var req = http.request(options, function(res) {
+                res.setEncoding("utf8");
+                res.on('data', function(chunk) {
+                    body += chunk;
+                });
+                res.on('end', function() {
+                    try {
+                        var result = JSON.parse(body),
+                            status = res.statusCode;
+
+                        assert.equal(status, 200, "Get all configs");
+                        assert.notEqual(typeof result, "undefined", "make sure there are some results");
+                        assert.notEqual(typeof result.configurations, "undefined", "make sure there is a `configurations` key");
+                        assert.ok(Array.isArray(result.configurations), "make sure there is an array under the `configurations` key");
+                        assert.equal(result.configurations.length, 2, "make sure there are 2 elements in the array");
+
+                        assert.equal(result.configurations[0].port, 3384, "Make sure it got sorted correctly");
                         pass();
                     } catch(e) {
                         fail(e);
@@ -231,8 +272,8 @@ var tests = {
         as_authenticated(function(content) {
             var postobj = {
                     "name" : "host2",
-                    "hostname" : "nessus-xml.lab.com",
-                    "port" : 10000,
+                    "hostname" : "anessus-xml.lab.com",
+                    "port" : 3384,
                     "username" : "admin"
                 },
                 postbody = JSON.stringify(postobj),

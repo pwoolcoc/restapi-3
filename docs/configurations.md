@@ -10,11 +10,19 @@ The following operations are available:
 
 Retrieves a list of the available configurations.
 
+You can add `sort=<property>` to sort the entries by that property.
+I.e., adding `?sort=name` to the URI will sort the entries by their
+name. Adding `dir=[asc|desc]` controls whether they are sorted into
+ascending or descending order.
+
 Example:
 
 ```bash
 $ curl -H "Authorization: <token here>" https://<host>:<port>/configuration
 {"configurations":[{"name":"host1","hostname":"nessus-ntp.lab.com","port":1241,"username":"toto"},{"name":"host2","hostname":"nessus-xml.lab.com","port":10000,"username":"admin"}]}
+$ # with sorting
+$ curl -H "Authorization: <token here>" https://<host>:<port>/configuration?sort=port&dir=desc
+{"configurations":[{"name":"host2","hostname":"nessus-xml.lab.com","port":10000,"username":"admin"},{"name":"host1","hostname":"nessus-ntp.lab.com","port":1241,"username":"toto"}]}
 ```
 
 ## POST /configuration
