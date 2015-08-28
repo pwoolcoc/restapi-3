@@ -8,7 +8,8 @@ var http = require('http'),
 
 var HOST = "127.0.0.1",
     PORT = 8080,
-    PATH = "/session";
+    SESSION_PATH = "/session",
+    CONFIGS_PATH = "/configuration";
 
 var tests = {
     login_postbody: function(pass, fail) {
@@ -20,7 +21,7 @@ var tests = {
         var options = {
             hostname: HOST,
             port: PORT,
-            path: PATH,
+            path: SESSION_PATH,
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -61,7 +62,7 @@ var tests = {
         var options = {
             hostname: HOST,
             port: PORT,
-            path: PATH,
+            path: SESSION_PATH,
             method: "POST",
             headers: {
                 "Authorization": "UGF1bDpwYXNzdzByZA=="
@@ -97,7 +98,7 @@ var tests = {
     logout: function(pass, fail) {
         as_authenticated(function(content) {
             var token = content.token,
-                path = PATH + "/Paul",  /* /session/Paul */
+                path = SESSION_PATH + "/Paul",  /* /session/Paul */
                 del_options = {
                     hostname: HOST,
                     port: PORT,
@@ -105,7 +106,7 @@ var tests = {
                     method: "DELETE",
                     headers: {
                         "Authorization": token,
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json"
                     }
                 };
 
@@ -120,6 +121,46 @@ var tests = {
             });
 
             del_req.end();
+        });
+    },
+    all_configs: function(pass, fail) {
+        as_authenticated(function(content) {
+            var token = content.token,
+                options = {
+                    hostname: HOST,
+                    port: PORT,
+                    path: CONFIGS_PATH,
+                    method: "GET",
+                    headers: {
+                        "Authorization": token,
+                        "Content-Type": "application/json"
+                    }
+                },
+                body = "";
+
+            var req = http.request(options, function(res) {
+                res.setEncoding("utf8");
+                res.on('data', function(chunk) {
+                    body += chunk;
+                });
+                res.on('end', function() {
+                    var result = JSON.parse(body),
+                        status = res.statusCode;
+
+                    try { 
+                        assert.equal(status, 200, "Get all configs");
+                        assert.notEqual(typeof result, "undefined", "make sure there are some results");
+                        assert.notEqual(typeof result.configurations, "undefined", "make sure there is a `configurations` key");
+                        assert.ok(Array.isArray(result.configurations), "make sure there is an array under the `configurations` key");
+                        assert.equal(result.configurations.length, 2, "make sure there are 2 elements in the array");
+                        pass();
+                    } catch(e) {
+                        fail(e);
+                    }
+                });
+            });
+
+            req.end();
         });
     }
 };
@@ -151,7 +192,7 @@ function as_authenticated(fn) {
     var options = {
         hostname: HOST,
         port: PORT,
-        path: PATH ,
+        path: SESSION_PATH ,
         method: "POST",
         headers: {
             "Authorization": new Buffer("Paul:passw0rd").toString('base64')
