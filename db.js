@@ -39,11 +39,7 @@ DB.prototype.read = function(crit, fn) {
         results = self.rows;
     } else {
         self.rows.forEach(function(row, idx) {
-            var match = [];
-            Object.keys(crit).forEach(function(key) {
-                match.push(row[key] === crit[key]);
-            });
-            if (match.reduce(function(accum, el) { return accum && el; }, true)) {
+            if (self.matches(crit, row)) {
                 results.push(row);
             }
         });
@@ -74,5 +70,13 @@ DB.prototype.update = function(crit, row) {
 
 DB.prototype.delete = function(crit) {
 };
+
+DB.prototype.matches = function(crit, row) {
+    var match = [];
+    Object.keys(crit).forEach(function(key) {
+        match.push(row[key] === crit[key]);
+    });
+    return match.reduce(function(accum, el) { return accum && el; }, true)
+}
 
 module.exports = DB;
