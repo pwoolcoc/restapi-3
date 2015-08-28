@@ -144,10 +144,10 @@ var tests = {
                     body += chunk;
                 });
                 res.on('end', function() {
-                    var result = JSON.parse(body),
-                        status = res.statusCode;
+                    try {
+                        var result = JSON.parse(body),
+                            status = res.statusCode;
 
-                    try { 
                         assert.equal(status, 200, "Get all configs");
                         assert.notEqual(typeof result, "undefined", "make sure there are some results");
                         assert.notEqual(typeof result.configurations, "undefined", "make sure there is a `configurations` key");
