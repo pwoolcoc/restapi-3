@@ -100,7 +100,7 @@ module.exports = (function() {
 
         var handler = routes[method],
             captures = match.slice(1),
-            params = uri.querystring || {},
+            params = uri.query || {},
             body = "";
 
         req.on('data', function(chunk) {
