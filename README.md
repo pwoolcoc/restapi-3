@@ -1,4 +1,4 @@
-# Rest API #1
+# Rest API #2
 
 This was written with node.js v0.12.7. It requires no external
 dependencies aside from a working node.js installation. If you have
@@ -23,5 +23,6 @@ and `node tests.js` to run the tests.
 There are docs in the `docs/` folder with some examples on how to use
 the endpoints.
 
-There is no way to register new users, so if you want to add users,
-please add them to the JSON-formatted file, `users.dat`.
+The database doesn't actually persist changes across reboots, but you 
+can add data to the application by editing the appropriate data file in
+the `data/` directory.
