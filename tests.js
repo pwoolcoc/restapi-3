@@ -164,66 +164,172 @@ var tests = {
         });
     },
     get_config: function(pass, fail) {
+        _get_config("host1", function(req, res, body, options) {
+            var results = JSON.parse(body),
+                should_be = {
+                    "name" : "host1",
+                    "hostname" : "nessus-ntp.lab.com",
+                    "port" : 1241,
+                    "username" : "toto"
+                };
+            try {
+                assert.equal(res.statusCode, 200);
+                assert.deepEqual(results, should_be);
+                pass();
+            } catch(e) {
+                fail(e);
+            }
+        });
+    },
+    create_config: function(pass, fail) {
         as_authenticated(function(content) {
-            var options = {
-                hostname: HOST,
-                port: PORT,
-                path: CONFIGS_PATH + "/host1",
-                method: "GET",
-                headers: {
-                    "Authorization": content.token,
-                    "Content-Type": "application/json"
-                }
-            };
+            var postobj = {
+                    name: "host3",
+                    hostname: "test.example.com",
+                    port: 1234,
+                    username: "bob"
+                },
+                postbody = JSON.stringify(postobj),
+                options = {
+                    hostname: HOST,
+                    port: PORT,
+                    path: CONFIGS_PATH,
+                    method: "POST",
+                    headers: {
+                        "Authorization": content.token,
+                        "Content-Type": "application/json",
+                        "Content-Length": postbody.length
+                    }
+                };
+
             var req = http.request(options, function(res) {
                 var body = "";
                 res.setEncoding("utf8");
-                res.on("data", function(chunk) {
+                res.on('data', function(chunk) {
                     body += chunk;
                 });
+
                 res.on('end', function() {
-                    var results = JSON.parse(body),
-                        should_be = {
-                            "name" : "host1",
-                            "hostname" : "nessus-ntp.lab.com",
-                            "port" : 1241,
-                            "username" : "toto"
-                        };
                     try {
-                        assert.equal(res.statusCode, 200);
-                        assert.deepEqual(results, should_be);
+                        assert.equal(res.statusCode, 201);
+                        var result = JSON.parse(body);
+                        assert.equal(result.configuration, "/configuration/" + postobj.name);
+                        _delete_config("host3", function() {});
                         pass();
                     } catch(e) {
                         fail(e);
                     }
                 });
             });
+
+            req.write(postbody);
             req.end();
+        });
+    },
+    update_config: function(pass, fail) {
+        as_authenticated(function(content) {
+            var postobj = {
+                    "name" : "host2",
+                    "hostname" : "nessus-xml.lab.com",
+                    "port" : 10000,
+                    "username" : "admin"
+                },
+                postbody = JSON.stringify(postobj),
+                options = {
+                    hostname: HOST,
+                    port: PORT,
+                    path: CONFIGS_PATH + "/" + postobj.name,
+                    method: "PUT",
+                    headers: {
+                        "Authorization": content.token,
+                        "Content-Type": "application/json",
+                        "Content-Length": postbody.length
+                    }
+                };
+
+            var req = http.request(options, function(res) {
+                var body = "";
+                res.setEncoding("utf8");
+                res.on('data', function(chunk) {
+                    body += chunk;
+                });
+
+                res.on('end', function() {
+                    try {
+                        assert.equal(res.statusCode, 204);
+                        pass();
+                    } catch(e) {
+                        fail(e);
+                    }
+                });
+            });
+
+            req.write(postbody);
+            req.end();
+        });
+    },
+    delete_config: function(pass, fail) {
+        _delete_config("host3", function(req, res, options) {
+            try {
+                assert.equal(res.statusCode, 204);
+                pass();
+            } catch(e) {
+                fail(e);
+            }
         });
     }
 };
 
-Object.keys(tests).forEach(function(test_name) {
-    /* Asynchronous tests, because why not? */
-    setTimeout(function() {
-        var fn = tests[test_name];
+/* HELPER FUNCTIONS */
 
-        fn(create_pass_fn(test_name),
-           create_fail_fn(test_name));
-    }, 0);
-});
+function _delete_config(name, fn) {
+    as_authenticated(function(content) {
+        var options = {
+                hostname: HOST,
+                port: PORT,
+                method: "DELETE",
+                path: CONFIGS_PATH + "/" + name,
+                headers: {
+                    'Authorization': content.token
+                }
+            };
 
-function create_pass_fn(test_name) {
-    return function() {
-        console.log("Passed test", test_name);
-    }
+        var req = http.request(options, function(res) {
+            res.setEncoding("utf8");
+            res.on('data', function(_) {});
+            res.on('end', function() {
+                fn(req, res, options);
+            });
+        });
+
+        req.end();
+    });
 }
 
-function create_fail_fn(test_name) {
-    return function(e) {
-        console.error("Failed test", test_name);
-        console.error(test_name, "Error was", e);
-    }
+function _get_config(name, fn) {
+    as_authenticated(function(content) {
+        var options = {
+            hostname: HOST,
+            port: PORT,
+            path: CONFIGS_PATH + "/" + name,
+            method: "GET",
+            headers: {
+                "Authorization": content.token,
+                "Content-Type": "application/json"
+            }
+        };
+        var req = http.request(options, function(res) {
+            var body = "";
+            res.setEncoding("utf8");
+            res.on("data", function(chunk) {
+                body += chunk;
+            });
+            res.on('end', function() {
+                fn(req, res, body, options);
+            });
+        });
+        req.end();
+    });
 }
 
 function as_authenticated(fn) {
@@ -252,3 +358,32 @@ function as_authenticated(fn) {
 
     req.end();
 }
+
+
+/* RUNNER */
+
+Object.keys(tests).forEach(function(test_name) {
+        var fn = tests[test_name];
+
+        var pass = create_pass_fn(test_name),
+            fail = create_fail_fn(test_name);
+        try {
+            fn(pass, fail);
+        } catch(e) {
+            fail(e);
+        }
+});
+
+function create_pass_fn(test_name) {
+    return function() {
+        console.log("Passed test", test_name);
+    }
+}
+
+function create_fail_fn(test_name) {
+    return function(e) {
+        console.error("Failed test", test_name);
+        console.error(test_name, "Error was", e);
+    }
+}
+
