@@ -66,6 +66,9 @@ DB.prototype.create = function(row) {
 };
 
 DB.prototype.update = function(crit, row) {
+    var self = this;
+    self.delete(crit);
+    self.create(row);
 };
 
 DB.prototype.delete = function(crit) {
