@@ -168,7 +168,27 @@ module.exports = (function() {
         this.debug("Serving HTTP on port", this.port);
         return http.createServer(this.router.bind(this))
                    .listen(this.port);
-    }
+    };
+
+    Server.prototype.json_response = function(obj, headers) {
+        if (typeof headers === "undefined") {
+            headers = {};
+        }
+
+        var default_headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (typeof obj !== "string") {
+            obj = JSON.stringify(obj);
+        }
+
+        return {
+            status: 200,
+            content: obj,
+            headers: merge(default_headers, headers)
+        };
+    };
 
     Server.prototype.debug = function() {
         if (this._debug) {
