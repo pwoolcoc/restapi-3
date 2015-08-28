@@ -144,6 +144,7 @@ var tests = {
                     body += chunk;
                 });
                 res.on('end', function() {
+                    console.log(body);
                     try {
                         var result = JSON.parse(body),
                             status = res.statusCode;

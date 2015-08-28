@@ -63,11 +63,14 @@ module.exports = {
                 name = captures[0],
                 data = args.data;
 
-            configs.update({ "name": name }, data);
-            return {
-                status: 204,
-                content: ""
-            };
+            if (configs.update({ "name": name }, data)) {
+                return {
+                    status: 204,
+                    content: ""
+                };
+            } else {
+                return app.error(404, "Not Found");
+            }
         };
     },
     delete: function(app) {
