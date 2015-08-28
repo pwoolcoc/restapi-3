@@ -69,6 +69,19 @@ DB.prototype.update = function(crit, row) {
 };
 
 DB.prototype.delete = function(crit) {
+    var self = this,
+        new_rows = [];
+    self.rows.forEach(function(row, idx) {
+        if (!self.matches(crit, row)) {
+            new_rows.push(row);
+        }
+    });
+
+    var changed = new_rows.length !== self.rows.length;
+
+    self.rows = new_rows;
+
+    return changed;
 };
 
 DB.prototype.matches = function(crit, row) {
