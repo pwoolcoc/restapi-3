@@ -83,6 +83,8 @@ module.exports = (function() {
         /* First, try to find a match for the route */
         var handler_pair = firstmatch(uri.pathname, self.routes);
         if (typeof handler_pair === "undefined") {
+            self.debug("Couldn't find handler for", method, uri.pathname);
+            self.debug("(no path", uri.pathname, "registered)");
             return self.process_return(res, self.error(404, "404 Not Found"));
         }
 
@@ -91,6 +93,8 @@ module.exports = (function() {
 
         /* If we can't perform the requested verb on that path, return 405 */
         if (typeof routes[method] === "undefined") {
+            self.debug("Couldn't find handler for", method, uri.pathname);
+            self.debug("(no handler for verb", method, "found)");
             return self.process_return(res, self.error(405, "405 Method Not Allowed"));
         }
 
