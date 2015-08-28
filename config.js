@@ -5,9 +5,10 @@ module.exports = {
         return function(args) {
             var repsonse;
             var all_configs = configs.read("*", function(err, result) {
+                console.log("result", result);
                 response = {
                     status: 200,
-                    content: JSON.stringify(result),
+                    content: JSON.stringify({ "configurations": result }),
                     headers: {
                         "Content-Type": "application/json"
                     }
