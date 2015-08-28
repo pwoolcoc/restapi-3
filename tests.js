@@ -95,29 +95,10 @@ var tests = {
         req.end();
     },
     logout: function(pass, fail) {
-        var options = {
-            hostname: HOST,
-            port: PORT,
-            path: PATH ,
-            method: "POST",
-            headers: {
-                "Authorization": new Buffer("Paul:passw0rd").toString('base64')
-            }
-        };
-
-        var req = http.request(options, function(res) {
-            var res_body = "",
-                status = res.statusCode;
-            res.setEncoding('utf8');
-            res.on('data', function(chunk) {
-                res_body += chunk;
-            });
-            res.on('end', function() {
-                var content = JSON.parse(res_body),
-                    token = content.token,
-                    path = PATH + "/Paul";  /* /session/Paul */
-
-                var del_options = {
+        as_authenticated(function(content) {
+            var token = content.token,
+                path = PATH + "/Paul",  /* /session/Paul */
+                del_options = {
                     hostname: HOST,
                     port: PORT,
                     path: path,
@@ -128,22 +109,18 @@ var tests = {
                     }
                 };
 
-                var del_req = http.request(del_options, function(res) {
-                    try {
-                        assert.equal(res.statusCode, 200, "Make sure request was successful")
-                    } catch(e) {
-                        fail(e);
-                        return;
-                    }
-                    pass();
-                });
-
-                del_req.end();
-
+            var del_req = http.request(del_options, function(res) {
+                try {
+                    assert.equal(res.statusCode, 200, "Make sure request was successful")
+                } catch(e) {
+                    fail(e);
+                    return;
+                }
+                pass();
             });
-        });
 
-        req.end();
+            del_req.end();
+        });
     }
 };
 
@@ -168,4 +145,31 @@ function create_fail_fn(test_name) {
         console.error("Failed test", test_name);
         console.error(test_name, "Error was", e);
     }
+}
+
+function as_authenticated(fn) {
+    var options = {
+        hostname: HOST,
+        port: PORT,
+        path: PATH ,
+        method: "POST",
+        headers: {
+            "Authorization": new Buffer("Paul:passw0rd").toString('base64')
+        }
+    };
+
+    var req = http.request(options, function(res) {
+        var res_body = "",
+            status = res.statusCode;
+        res.setEncoding('utf8');
+        res.on('data', function(chunk) {
+            res_body += chunk;
+        });
+        res.on('end', function() {
+            var content = JSON.parse(res_body);
+            fn(content);
+        });
+    });
+
+    req.end();
 }
