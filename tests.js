@@ -152,7 +152,7 @@ var tests = {
                         assert.notEqual(typeof result, "undefined", "make sure there are some results");
                         assert.notEqual(typeof result.configurations, "undefined", "make sure there is a `configurations` key");
                         assert.ok(Array.isArray(result.configurations), "make sure there is an array under the `configurations` key");
-                        assert.equal(result.configurations.length, 2, "make sure there are 2 elements in the array");
+                        assert.equal(result.configurations.length, 23, "make sure there are 2 elements in the array");
                         pass();
                     } catch(e) {
                         fail(e);
@@ -192,9 +192,9 @@ var tests = {
                         assert.notEqual(typeof result, "undefined", "make sure there are some results");
                         assert.notEqual(typeof result.configurations, "undefined", "make sure there is a `configurations` key");
                         assert.ok(Array.isArray(result.configurations), "make sure there is an array under the `configurations` key");
-                        assert.equal(result.configurations.length, 2, "make sure there are 2 elements in the array");
+                        assert.equal(result.configurations.length, 23, "make sure there are 2 elements in the array");
 
-                        assert.equal(result.configurations[0].port, 3384, "Make sure it got sorted correctly");
+                        assert.equal(result.configurations[0].port, 3315, "Make sure it got sorted correctly");
                         pass();
                     } catch(e) {
                         fail(e);
@@ -226,7 +226,7 @@ var tests = {
     create_config: function(pass, fail) {
         as_authenticated(function(content) {
             var postobj = {
-                    name: "host3",
+                    name: "host30",
                     hostname: "test.example.com",
                     port: 1234,
                     username: "bob"
@@ -256,7 +256,7 @@ var tests = {
                         assert.equal(res.statusCode, 201);
                         var result = JSON.parse(body);
                         assert.equal(result.configuration, "/configuration/" + postobj.name);
-                        _delete_config("host3", function() {});
+                        _delete_config(postobj.name, function() {});
                         pass();
                     } catch(e) {
                         fail(e);
@@ -273,7 +273,7 @@ var tests = {
             var postobj = {
                     "name" : "host2",
                     "hostname" : "anessus-xml.lab.com",
-                    "port" : 3384,
+                    "port" : 3315,
                     "username" : "admin"
                 },
                 postbody = JSON.stringify(postobj),
@@ -311,7 +311,7 @@ var tests = {
         });
     },
     delete_config: function(pass, fail) {
-        _delete_config("host3", function(req, res, options) {
+        _delete_config("host30", function(req, res, options) {
             try {
                 assert.equal(res.statusCode, 204);
                 pass();
