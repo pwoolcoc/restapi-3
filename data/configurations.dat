@@ -1,14 +1,140 @@
 [
     {
+        "name" : "host7",
+        "hostname" : "nessus-ntp.cn.lab.com",
+        "port" : 1025,
+        "username" : "duncan"
+    },
+    {
         "name" : "host1",
         "hostname" : "nessus-ntp.lab.com",
         "port" : 1241,
         "username" : "toto"
     },
     {
+        "name" : "host3",
+        "hostname" : "nessus-ntp.us.lab.com",
+        "port" : 354,
+        "username" : "stilgar"
+    },
+    {
+        "name" : "host5",
+        "hostname" : "nessus-xml.gr.lab.com",
+        "port" : 2826,
+        "username" : "korba"
+    },
+    {
+        "name" : "host14",
+        "hostname" : "nessus-xml.in.lab.com",
+        "port" : 2382,
+        "username" : "jessica"
+    },
+    {
+        "name" : "host8",
+        "hostname" : "nessus-xml.jp.lab.com",
+        "port" : 2066,
+        "username" : "leto"
+    },
+    {
+        "name" : "host9",
+        "hostname" : "nessus-ntp.af.lab.com",
+        "port" : 89,
+        "username" : "paul"
+    },
+    {
+        "name" : "host22",
+        "hostname" : "nessus-xml.vm.lab.com",
+        "port" : 3311,
+        "username" : "otheym"
+    },
+    {
+        "name" : "host11",
+        "hostname" : "nessus-xml.ci.lab.com",
+        "port" : 2784,
+        "username" : "lichna"
+    },
+    {
+        "name" : "host21",
+        "hostname" : "nessus-ntp.th.lab.com",
+        "port" : 2042,
+        "username" : "bejaz"
+    },
+    {
+        "name" : "host17",
+        "hostname" : "nessus-ntp.nl.lab.com",
+        "port" : 2166,
+        "username" : "ghanima"
+    },
+    {
+        "name" : "host13",
+        "hostname" : "nessus-ntp.gm.lab.com",
+        "port" : 2811,
+        "username" : "alia"
+    },
+    {
+        "name" : "host16",
+        "hostname" : "nessus-xml.mx.lab.com",
+        "port" : 2555,
+        "username" : "vladimir"
+    },
+    {
+        "name" : "host6",
+        "hostname" : "nessus-ntp.zb.lab.com",
+        "port" : 2987,
+        "username" : "piter"
+    },
+    {
         "name" : "host2",
         "hostname" : "nessus-xml.lab.com",
-        "port" : 3384,
-        "username" : "admin"
+        "port" : 420,
+        "username" : "gurney"
+    },
+    {
+        "name" : "host18",
+        "hostname" : "nessus-ntp.po.lab.com",
+        "port" : 450,
+        "username" : "thufir"
+    },
+    {
+        "name" : "host16",
+        "hostname" : "nessus-ntp.le.lab.com",
+        "port" : 2410,
+        "username" : "mapes"
+    },
+    {
+        "name" : "host19",
+        "hostname" : "nessus-xml.sa.lab.com",
+        "port" : 1372,
+        "username" : "chani"
+    },
+    {
+        "name" : "host20",
+        "hostname" : "nessus-ntp.sw.lab.com",
+        "port" : 1682,
+        "username" : "irulan"
+    },
+    {
+        "name" : "host12",
+        "hostname" : "nessus-ntp.fr.lab.com",
+        "port" : 1075,
+        "username" : "yuey"
+    },
+    {
+        "name" : "host4",
+        "hostname" : "nessus-ntp.uk.lab.com",
+        "port" : 2065,
+        "username" : "rabban"
+    },
+    {
+        "name" : "host15",
+        "hostname" : "nessus-ntp.it.lab.com",
+        "port" : 3315,
+        "username" : "feyd"
+    },
+    {
+        "name" : "host10",
+        "hostname" : "nessus-ntp.ca.lab.com",
+        "port" : 3175,
+        "username" : "helen"
     }
 ]
