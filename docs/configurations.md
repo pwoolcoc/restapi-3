@@ -15,6 +15,13 @@ I.e., adding `?sort=name` to the URI will sort the entries by their
 name. Adding `dir=[asc|desc]` controls whether they are sorted into
 ascending or descending order.
 
+You can also add `page=<num>` to request a specific page of the data. By
+default, it will give you 10 records at a time, but you can add
+\`num=<num>` to the querystring to request a specific number of records.
+When the results are paginated, there will be a special `links` key in
+the returned results that will contain links to the next and previous
+pages.
+
 Example:
 
 ```bash

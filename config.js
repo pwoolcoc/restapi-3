@@ -6,8 +6,16 @@ module.exports = {
             var repsonse,
                 params = args.params,
                 sort = params["sort"] || "name",
-                dir = params["dir"] || "asc";
-            var all_configs = configs.read("*", { "sort": sort, "dir": dir }, function(err, result) {
+                dir = params["dir"] || "asc",
+                page = params["page"],
+                num = params["num"],
+                opts = {
+                    "sort": sort,
+                    "dir": dir,
+                    "page": page,
+                    "num": num
+                };
+            var all_configs = configs.read("*", opts, function(err, result) {
                 response = app.json_response({ "configurations": result });
             });
             return response;

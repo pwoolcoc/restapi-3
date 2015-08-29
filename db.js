@@ -81,6 +81,16 @@ DB.prototype.read = function(crit, opts_or_fn, _fn) {
         });
     }
 
+    if (typeof opts.page !== "undefined") {
+        var page = parseInt(opts.page),
+            num = parseInt((typeof opts.num !== "undefined" ? opts.num : "10"));
+
+        var start = (page - 1) * num,
+            end = start + num;
+
+        results = results.slice(start, end);
+    }
+
     /* not actually catching any errors at this point */
     return fn(null, results);
 };

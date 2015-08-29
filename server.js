@@ -118,6 +118,7 @@ module.exports = (function() {
                     captures: captures,
                     headers: headers,
                     data: body,
+                    _uri: uri,
                     _res: res
             });
 
@@ -204,7 +205,10 @@ module.exports = (function() {
         for (var k in haystack) {
             if (k === needle) {
                 var m = haystack[k];
-                return [m, [m]];
+                return [m, [m]]; /* weird return value, to be compatible
+                                  * with the value that gets returned from
+                                  * the regex match below
+                                  */
             }
         }
         /* Nothing, fallback to regex matching */
